@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Edukasi PAI & Budi Pekerti Kelas 4</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{font-family:'Roboto Condensed',sans-serif;background:black;color:white;overflow:hidden}
+.answer-box{
+  background:linear-gradient(to bottom,#000,#203A43);
+  border:2px solid #8e9eab;
+  border-radius:40px;
+  padding:15px 25px;
+  cursor:pointer;
+  font-size:22px;
+  transition:all .2s ease;
+}
+.answer-box:hover{background:linear-gradient(to bottom,#F2994A,#F2C94C);color:black}
+.answer-box.active{
+  transform:scale(1.05);
+  background:linear-gradient(to bottom,#22c55e,#86efac);
+  color:black;
+}
+.ladder-item{padding:4px 10px;font-weight:bold;color:#facc15}
+.ladder-item.active{background:#facc15;color:black}
+.hidden{display:none}
+.fade{transition:opacity 1s ease}
+.fade-out{opacity:0}
+.fade-in{opacity:1}
+</style>
+</head>
+
+<body class="relative h-screen w-screen">
+
+<!-- BACKGROUND -->
+<div id="bgIntro" class="absolute inset-0 fade fade-in"
+style="background:url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgyf4O7UaFdWO3hyw-oEiqduJSvv9bLOZTl-FYch9laXyb84hclzRS39uYQbzwz0dLTYItO6YC_alP3ACBgIIkB0Q7kVJjN3UN-cjFHfxhcYmemQIbxKxrlCQewQss-QcSLEpf8yjsvGOFgDUIzHANQ1UwrHEILMrNoEKy_kd50ZFHFT4V0RnGu0jVLwxBZ/s2752/1.png') center/contain no-repeat black;">
+</div>
+
+<div id="bgGame" class="absolute inset-0 hidden"
+style="background:url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgm0rEhtkeaBehBETDD_nMwvAyeKh6fLkSw3q4TMC2wlesdBUu2k0czybPAwYhe1I_Us4R42HobgiyNJHNJiChPK6dLLZSgXjNkkzq2TBHt6T7rOYkyx07eMaADDm7oH795ZBWkVixWGySDuTpjJ9EGFPYrS-IHkLqOiydE2BaijVucgTloMtR5B1KI4H_G/s1600/3.png') center/cover no-repeat;">
+</div>
+
+<div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
+
+<!-- AUDIO -->
+<audio id="introMusic" src="https://raw.githubusercontent.com/cikgudirman-create/audio-game/main/backsound%20awal%20masuk.mp3"></audio>
+<audio id="bgm" loop src="https://raw.githubusercontent.com/cikgudirman-create/audio-game/main/Backsound%20soal%201-9.mp3"></audio>
+<audio id="benar" src="https://raw.githubusercontent.com/cikgudirman-create/audio-game/main/Jawaban%20Benar.mp3"></audio>
+<audio id="salah" src="https://raw.githubusercontent.com/cikgudirman-create/audio-game/main/Jawaban%20Salah.mp3"></audio>
+
+<!-- INTRO -->
+<div id="introScreen" class="absolute inset-0 z-20 flex items-end justify-center pb-32">
+<button onclick="startGame()" class="bg-blue-600 px-12 py-4 rounded-full text-3xl font-bold">MULAI</button>
+</div>
+
+<!-- GAME -->
+<div id="game" class="hidden relative z-20 h-full flex p-6 gap-6">
+  <div class="flex-1 flex flex-col justify-end">
+    <div class="bg-black/70 p-6 rounded-xl mb-4">
+      <h2 id="question" class="text-3xl text-center font-bold"></h2>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="answer-box" onclick="answer(0,this)">A. <span id="a0"></span></div>
+      <div class="answer-box" onclick="answer(1,this)">B. <span id="a1"></span></div>
+      <div class="answer-box" onclick="answer(2,this)">C. <span id="a2"></span></div>
+      <div class="answer-box" onclick="answer(3,this)">D. <span id="a3"></span></div>
+    </div>
+  </div>
+  <div class="w-52 bg-black/70 rounded-xl p-3 flex flex-col-reverse" id="ladder"></div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden absolute inset-0 bg-black/80 z-30 flex flex-col items-center justify-center">
+  <h2 class="text-3xl mb-4">PERMAINAN SELESAI</h2>
+  <div id="money" class="text-4xl text-yellow-400 mb-4"></div>
+  <button onclick="location.reload()" class="bg-green-600 px-10 py-4 rounded-full text-xl">MAIN LAGI</button>
+</div>
+
+<script>
+// ==========================
+// BANK SOAL GABUNGAN (PAI KELAS 4)
+// ==========================
+const bankSoal = [
+
+/* SHALAT BERJAMAAH */
+{q:"Shalat berjamaah adalah shalat yang dilakukan...",answers:["Sendiri","Bersama-sama","Bergantian","Di rumah"],correct:1},
+{q:"Orang yang memimpin shalat berjamaah disebut...",answers:["Makmum","Imam","Muadzin","Khatib"],correct:1},
+{q:"Pahala shalat berjamaah lebih utama sebanyak...",answers:["10","15","20","27"],correct:3},
+
+/* HIDUP BERSIH DAN SEHAT */
+{q:"Menjaga kebersihan tubuh bertujuan agar terhindar dari...",answers:["Pujian","Penyakit","Tugas","Permainan"],correct:1},
+{q:"Membuang sampah harus di...",answers:["Sungai","Jalan","Tempat sampah","Halaman"],correct:2},
+{q:"Mencuci tangan sebaiknya menggunakan...",answers:["Air","Sabun dan air","Tisu","Handuk"],correct:1},
+
+/* PUASA RAMADHAN */
+{q:"Puasa Ramadhan dilakukan pada bulan...",answers:["Syawal","Ramadhan","Sya'ban","Dzulhijjah"],correct:1},
+{q:"Puasa Ramadhan hukumnya adalah...",answers:["Sunnah","Makruh","Wajib","Mubah"],correct:2},
+{q:"Makan sahur dilakukan sebelum...",answers:["Isya","Tidur","Subuh","Maghrib"],correct:2},
+
+/* AKHLAK MULIA */
+{q:"Bersikap jujur termasuk akhlak...",answers:["Buruk","Mulia","Biasa","Tercela"],correct:1},
+{q:"Menepati janji menunjukkan sikap...",answers:["Malas","Amanah","Takut","Pemarah"],correct:1},
+{q:"Akhlak mulia harus dilakukan...",answers:["Kadang-kadang","Setiap waktu","Saat ada guru","Di sekolah saja"],correct:1},
+
+/* KISAH TELADAN */
+{q:"Kisah teladan berisi contoh perilaku...",answers:["Buruk","Baik","Lucu","Menakutkan"],correct:1},
+{q:"Nabi Muhammad SAW adalah teladan dalam hal...",answers:["Kekayaan","Kejujuran","Kekuatan","Kedudukan"],correct:1},
+{q:"Kisah Nabi Ayyub AS mengajarkan sifat...",answers:["Kaya","Sabar","Kuat","Cerdas"],correct:1}
+];
+
+// ==========================
+// LOGIKA GAME
+// ==========================
+const ladderMoney=[
+"Rp 50.000","Rp 125.000","Rp 250.000","Rp 500.000","Rp 1.000.000",
+"Rp 2.000.000","Rp 4.000.000","Rp 8.000.000","Rp 16.000.000",
+"Rp 32.000.000","Rp 64.000.000","Rp 125.000.000",
+"Rp 250.000.000","Rp 500.000.000","Rp 1 Milyar"
+];
+
+let questions=[],level=0;
+const shuffle=a=>a.sort(()=>Math.random()-0.5);
+
+function stopAllAudio(){
+  [bgm,benar,salah].forEach(a=>{a.pause();a.currentTime=0;});
+}
+
+function startGame(){
+  introMusic.play();
+  questions=shuffle([...bankSoal]).slice(0,15);
+  level=0;
+  setTimeout(()=>{
+    introMusic.pause();
+    bgIntro.classList.add("hidden");
+    bgGame.classList.remove("hidden");
+    introScreen.classList.add("hidden");
+    game.classList.remove("hidden");
+    bgm.play();
+    load();
+  },800);
+}
+
+function load(){
+  question.innerText=questions[level].q;
+  questions[level].answers.forEach((v,i)=>document.getElementById("a"+i).innerText=v);
+  ladder.innerHTML="";
+  ladderMoney.forEach((m,i)=>{
+    const d=document.createElement("div");
+    d.className="ladder-item"+(i===level?" active":"");
+    d.innerText=(i+1)+". "+m;
+    ladder.appendChild(d);
+  });
+}
+
+function answer(i,el){
+  stopAllAudio();
+  if(i===questions[level].correct){
+    benar.play();
+    level++;
+    if(level>=questions.length) endGame(level-1);
+    else setTimeout(()=>{bgm.play();load()},1000);
+  }else{
+    salah.play();
+    setTimeout(()=>endGame(level-1),1000);
+  }
+}
+
+function endGame(lv){
+  bgm.pause();
+  game.classList.add("hidden");
+  result.classList.remove("hidden");
+  money.innerText=lv>=0?ladderMoney[lv]:"Rp 0";
+}
+</script>
+
+</body>
+</html>

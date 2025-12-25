@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Game PAI Gasing Sakti</title>
+<script>
+  const bgCoverUrl = 'https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/cover%20awal%20game.png';
+  const bgArenaUrl = 'https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/arena%20permainan%20TEMPLATE%20GAME.png';
+  const gasingSpinnerUrl = 'https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/EFEK%20GASING%20KETIKA%20MENJAWAB.png';
+  const gasingBeraduUrl = 'https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/EFEK%20GASING%20BERADU.png';
+  const audioGameUrl = 'https://raw.githubusercontent.com/cikgudirman-create/audio-OK/main/alex-productions-happy-and-fun-background-music(chosic.com).mp3';
+  // Foto Profil
+  const fotoProfilUrl = 'https://github.com/cikgudirman-create/foto-profil/blob/main/Gemini_Generated_Image_2iyl142iyl142iyl.png?raw=true';
+</script>
+
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/cover%20awal%20game.png">
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/arena%20permainan%20TEMPLATE%20GAME.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://raw.githubusercontent.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Rye&display=swap" rel="stylesheet">
+
+<style>
+  /* --- CSS STYLING --- */
+  :root {
+    --font-utama: 'Poppins', sans-serif;
+    --font-judul: 'Rye', cursive;
+    --warna-emas: #FFD700;
+    --warna-kayu-gelap: #3E2723;
+    --warna-kayu-terang: #8D6E63;
+    --gradient-kayu: linear-gradient(to bottom, #5D4037, #3E2723);
+    --gradient-emas: linear-gradient(to bottom, #FFECB3, #FFC107);
+    --gradient-merah: linear-gradient(to bottom, #c62828, #8e0000); 
+  }
+
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; position: fixed; 
+    background-color: #222; font-family: var(--font-utama);
+    touch-action: none; -webkit-user-select: none; user-select: none;
+  }
+
+  #game-container { position: absolute; top:0; left:0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
+
+  /* SCREENS */
+  .screen {
+    position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-size: cover; background-position: center center; background-repeat: no-repeat;
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+  }
+  #screen-start { display: flex; background-image: url('https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/cover%20awal%20game.png'); z-index: 10; }
+  #screen-arena { background-image: url('https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/arena%20permainan%20TEMPLATE%20GAME.png'); z-index: 5; }
+  #screen-end { background-image: url('https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/arena%20permainan%20TEMPLATE%20GAME.png'); z-index: 15; }
+  /* Background Profil samakan dengan arena tapi gelap sedikit */
+  #screen-profil { background-image: url('https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/arena%20permainan%20TEMPLATE%20GAME.png'); z-index: 20; }
+  #screen-profil::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: -1; }
+
+  /* --- FOOTER CREATOR --- */
+  #creator-footer {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    text-align: center; padding: 10px 0;
+    background: rgba(0, 0, 0, 0.6); 
+    color: var(--warna-emas); font-family: var(--font-utama);
+    font-size: 1rem; font-weight: 600;
+    text-shadow: 1px 1px 2px #000;
+    z-index: 60; display: none; pointer-events: none; 
+  }
+
+  /* --- UI GAMEPLAY --- */
+  #hud-score { 
+    position: absolute; top: 20px; right: 30px; font-size: 1.3rem; color: var(--warna-emas); 
+    background: rgba(62, 39, 35, 0.8); padding: 8px 25px; border-radius: 50px; 
+    border: 3px solid var(--warna-emas); z-index: 50; pointer-events: none; 
+    font-family: var(--font-judul); letter-spacing: 1px;
+  }
+  
+  #question-box { 
+    background: rgba(62, 39, 35, 0.85); padding: 25px; border-radius: 25px; 
+    border: 4px solid var(--warna-emas); width: 65%; max-width: 750px; text-align: center; 
+    font-size: 1.6rem; font-weight: 600; color: #FFF; margin-top: -18vh; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.2); 
+    z-index: 50; pointer-events: none; text-shadow: 2px 2px 4px #000;
+  }
+  
+  #answers-container { 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
+    width: 65%; max-width: 750px; margin-top: 25px; z-index: 50;
+  }
+  
+  .answer-btn { 
+    background: var(--gradient-kayu); color: var(--warna-emas); border: 2px solid var(--warna-emas); 
+    padding: 15px 20px; font-size: 1.2rem; border-radius: 15px; 
+    cursor: pointer; font-weight: bold; text-shadow: 1px 1px 3px #000; 
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3); -webkit-tap-highlight-color: transparent; transition: all 0.1s;
+    position: relative; overflow: hidden;
+  }
+  .answer-btn::after {
+    content: ''; position: absolute; top: 0; left: -50%; width: 20%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,215,0,0.4), transparent);
+    transform: skewX(-20deg); transition: 0.5s;
+  }
+  .answer-btn:active { transform: scale(0.97); background: #3E2723; color: #FFF; border-color: #FFF;}
+  .answer-btn.disabled { pointer-events: none; opacity: 0.8; filter: grayscale(30%); }
+
+  /* --- ANIMASI GASING --- */
+  .gasing-container { 
+    position: absolute; bottom: 12vh; width: 160px; height: 160px; 
+    transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 5; pointer-events: none; perspective: 800px;
+  }
+  #gasing-kiri { left: 8vw; } #gasing-kanan { right: 8vw; }
+  .gasing-spinner { 
+    width: 100%; height: 100%; 
+    background-image: url('https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/EFEK%20GASING%20KETIKA%20MENJAWAB.png'); background-size: contain; background-repeat: no-repeat; background-position: center; 
+    animation: spin3D 0.5s linear infinite; transform-style: preserve-3d;
+  }
+  @keyframes spin3D { from { transform: rotateX(25deg) rotateY(0deg); } to { transform: rotateX(25deg) rotateY(360deg); } }
+
+  /* EFEK & FEEDBACK */
+  #collision-effect { position: absolute; bottom: 15vh; left: 50%; transform: translateX(-50%) scale(0); width: 280px; height: 280px; background-image: url('https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/EFEK%20GASING%20BERADU.png'); background-size: contain; background-repeat: no-repeat; background-position: center; z-index: 10; transition: transform 0.3s ease-out; pointer-events: none;}
+  #feedback-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 90; animation: popIn 0.4s; pointer-events: none;}
+  .feedback-img { max-width: 70%; max-height: 50%; object-fit: contain; filter: drop-shadow(0 0 20px var(--warna-emas)); }
+  
+  /* --- OVERLAY PEMICU --- */
+  #audio-activator-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.1); z-index: 9999; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 12vh; cursor: pointer; }
+  #audio-activator-text { 
+    color: var(--warna-emas); font-size: 1.5rem; font-weight: bold; text-align: center; font-family: var(--font-judul); 
+    text-shadow: 2px 2px 5px #000; animation: pulse 1.5s infinite; background: rgba(62, 39, 35, 0.9); 
+    padding: 12px 40px; border-radius: 40px; border: 3px solid var(--warna-emas); letter-spacing: 1px;
+  }
+
+  /* --- LAYAR AKHIR & BUTTONS --- */
+  .btn-si-sakti { 
+    font-family: var(--font-judul); font-size: 2rem; color: var(--warna-kayu-gelap); 
+    background: var(--gradient-emas); padding: 12px 50px; 
+    border: 4px solid var(--warna-kayu-gelap); border-radius: 50px; cursor: pointer; 
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.5); box-shadow: 0 8px 15px rgba(0,0,0,0.4); 
+    -webkit-tap-highlight-color: transparent; transition: transform 0.1s; margin: 15px 10px; display: inline-block;
+  }
+  .btn-si-sakti:active { transform: scale(0.95); }
+  .btn-keluar { background: var(--gradient-merah); color: #FFF; border-color: #FFF; text-shadow: 2px 2px 4px #000; }
+  
+  /* Tombol Kecil Profil */
+  .btn-profil-kecil {
+    display: block; margin: 15px auto 0 auto;
+    font-family: var(--font-utama); font-size: 1rem; color: #FFF;
+    background: transparent; border: 1px solid rgba(255,255,255,0.5); 
+    padding: 5px 15px; border-radius: 20px; cursor: pointer;
+    text-decoration: none; transition: 0.3s;
+  }
+  .btn-profil-kecil:hover { background: rgba(255,255,255,0.1); border-color: var(--warna-emas); color: var(--warna-emas); }
+
+  #final-score-box { background: rgba(62, 39, 35, 0.95); padding: 40px; border-radius: 30px; text-align: center; border: 6px solid var(--warna-emas); box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); }
+  #final-score-box h2 { font-size: 2.5rem; color: var(--warna-emas); margin: 0; font-family: var(--font-judul); letter-spacing: 2px;}
+  #final-score-text { font-size: 5rem; font-weight: bold; color: #FFF; text-shadow: 3px 3px 0px #000, 0 0 20px var(--warna-emas); margin: 10px 0;}
+  #end-buttons-container { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+
+  /* --- KARTU PROFIL STYLE --- */
+  .profil-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px; border-radius: 20px; border: 4px solid var(--warna-emas);
+    max-width: 500px; width: 85%; text-align: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .profil-img {
+    width: 140px; height: 140px; border-radius: 50%;
+    border: 4px solid var(--warna-kayu-gelap);
+    object-fit: cover; margin-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+  .profil-nama { font-family: var(--font-judul); font-size: 1.8rem; color: var(--warna-kayu-gelap); margin: 5px 0; }
+  .profil-jabatan { font-size: 1.1rem; font-weight: bold; color: #333; margin-bottom: 10px; }
+  .profil-tag { 
+    display: inline-block; background: var(--warna-emas); color: var(--warna-kayu-gelap);
+    padding: 4px 10px; border-radius: 15px; font-size: 0.85rem; font-weight: bold; margin: 2px;
+  }
+  .profil-unit { font-size: 0.95rem; color: #555; margin-top: 15px; font-style: italic; border-top: 1px solid #ccc; padding-top: 10px;}
+  
+  .btn-tutup-profil {
+    position: absolute; top: -15px; right: -15px;
+    background: var(--gradient-merah); color: white; border: 2px solid white;
+    width: 40px; height: 40px; border-radius: 50%; font-weight: bold; font-size: 1.2rem;
+    cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+  }
+
+  /* ANIMASI UMUM */
+  @keyframes popIn { from {transform: scale(0.5); opacity:0;} to {transform: scale(1); opacity:1;} }
+  @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05); filter: brightness(1.2);} 100% {transform: scale(1);} }
+
+  /* MEDIA QUERY IFP BESAR */
+  @media (min-width: 1280px) {
+    #question-box { font-size: 2.2rem; padding: 40px; width: 60%; max-width: 1000px; margin-top: -20vh;}
+    #answers-container { width: 60%; max-width: 1000px; gap: 25px; }
+    .answer-btn { font-size: 1.6rem; padding: 25px; border-width: 3px;}
+    .gasing-container { width: 250px; height: 250px; bottom: 10vh;}
+    #gasing-kiri { left: 12vw; } #gasing-kanan { right: 12vw; }
+    #collision-effect { width: 450px; height: 450px; bottom: 8vh;}
+    #audio-activator-text { font-size: 2.5rem; padding: 20px 60px; border-width: 4px;} 
+    .btn-si-sakti { font-size: 2.8rem; padding: 18px 70px; }
+    #hud-score { font-size: 1.8rem; padding: 12px 35px; top: 30px; right: 40px;}
+    #creator-footer { font-size: 1.5rem; padding: 15px 0; }
+    
+    /* Profil Scaling */
+    .profil-card { max-width: 700px; padding: 50px; }
+    .profil-img { width: 200px; height: 200px; }
+    .profil-nama { font-size: 2.5rem; }
+    .profil-jabatan { font-size: 1.5rem; }
+    .profil-tag { font-size: 1.2rem; padding: 8px 15px; }
+    .profil-unit { font-size: 1.3rem; margin-top: 25px; }
+    .btn-profil-kecil { font-size: 1.3rem; padding: 8px 25px; }
+  }
+</style>
+</head>
+<body>
+
+<audio id="bgm-gameplay" loop preload="auto" crossorigin="anonymous">
+  <source src="https://raw.githubusercontent.com/cikgudirman-create/audio-OK/main/alex-productions-happy-and-fun-background-music(chosic.com).mp3" type="audio/mpeg">
+</audio>
+
+<div id="game-container">
+  <div id="audio-activator-overlay">
+    <div id="audio-activator-text">👆 SENTUH LAYAR UNTUK MULAI BERMAIN</div>
+  </div>
+
+  <div id="screen-start" class="screen"></div>
+
+  <div id="screen-arena" class="screen">
+    <div id="hud-score">SKOR: <span id="score-val">0</span></div>
+    <div id="question-box">Memuat soal...</div>
+    <div id="answers-container">
+      <button class="answer-btn" ontouchstart="checkAnswer(0, event)" onclick="checkAnswer(0, event)">Jawaban A</button>
+      <button class="answer-btn" ontouchstart="checkAnswer(1, event)" onclick="checkAnswer(1, event)">Jawaban B</button>
+      <button class="answer-btn" ontouchstart="checkAnswer(2, event)" onclick="checkAnswer(2, event)">Jawaban C</button>
+      <button class="answer-btn" ontouchstart="checkAnswer(3, event)" onclick="checkAnswer(3, event)">Jawaban D</button>
+    </div>
+    <div id="gasing-kiri" class="gasing-container"><div class="gasing-spinner"></div></div>
+    <div id="gasing-kanan" class="gasing-container"><div class="gasing-spinner"></div></div>
+    <div id="collision-effect"></div>
+    <div id="feedback-overlay"><img id="feedback-img" class="feedback-img" src="" alt="Feedback"></div>
+  </div>
+  
+  <div id="screen-end" class="screen">
+      <div id="final-score-box">
+          <h2>PERMAINAN SELESAI!</h2>
+          <div id="final-score-text">100</div>
+          <div id="end-buttons-container">
+            <button class="btn-si-sakti" ontouchstart="resetGame(event)" onclick="resetGame(event)">MAIN LAGI</button>
+            <button class="btn-si-sakti btn-keluar" ontouchstart="exitGame(event)" onclick="exitGame(event)">KELUAR</button>
+          </div>
+          <button class="btn-profil-kecil" ontouchstart="showProfile(event)" onclick="showProfile(event)">Profil Pengembang</button>
+      </div>
+  </div>
+
+  <div id="screen-profil" class="screen">
+      <div class="profil-card">
+          <button class="btn-tutup-profil" ontouchstart="closeProfile(event)" onclick="closeProfile(event)">X</button>
+          <img class="profil-img" src="https://github.com/cikgudirman-create/foto-profil/blob/main/Gemini_Generated_Image_2iyl142iyl142iyl.png?raw=true" alt="Foto Profil">
+          <div class="profil-nama">Kemas Sudirman</div>
+          <div class="profil-jabatan">Guru PAIdBP</div>
+          <div>
+             <span class="profil-tag">Duta Teknologi Kemendikdasmen</span>
+             <span class="profil-tag">Guru Pejuang Digital</span>
+          </div>
+          <div class="profil-unit">Unit Kerja: SD Negeri 51 Setiris - Muaro Jambi</div>
+      </div>
+  </div>
+
+  <div id="creator-footer">
+    Creator : Kemas Sudirman - Guru PAIdBP SD 51 Setiris-Muaro Jambi
+  </div>
+</div>
+
+<script>
+  // --- BANK SOAL 100 BUTIR ---
+    const bankSoal = [
+    { q: "Rasul adalah manusia pilihan Allah SWT yang bertugas untuk...", answers: ["Membuat hukum sendiri", "Menerima dan menyampaikan wahyu", "Menjadi raja", "Mengumpulkan harta"], correct: 1 },
+    { q: "Beriman kepada Rasul Allah termasuk rukun iman ke-", answers: ["Satu", "Dua", "Tiga", "Empat"], correct: 2 },
+    { q: "Jumlah rasul yang wajib kita ketahui ada...", answers: ["10", "20", "25", "30"], correct: 2 },
+    { q: "Rasul terakhir yang diutus Allah SWT adalah...", answers: ["Nabi Isa AS", "Nabi Musa AS", "Nabi Muhammad SAW", "Nabi Ibrahim AS"], correct: 2 },
+    { q: "Sifat wajib rasul yang berarti jujur adalah...", answers: ["Amanah", "Tabligh", "Shiddiq", "Fathonah"], correct: 2 },
+    { q: "Amanah artinya rasul selalu...", answers: ["Pandai berbicara", "Dapat dipercaya", "Cerdas", "Pemberani"], correct: 1 },
+    { q: "Tabligh artinya rasul selalu...", answers: ["Merahasiakan wahyu", "Menyampaikan wahyu Allah", "Mengubah wahyu", "Memilih wahyu"], correct: 1 },
+    { q: "Fathonah artinya rasul memiliki sifat...", answers: ["Kaya", "Kuat", "Cerdas", "Sabar"], correct: 2 },
+    { q: "Hikmah beriman kepada rasul adalah...", answers: ["Menjadi sombong", "Memiliki teladan hidup", "Bebas berbuat apa saja", "Tidak perlu beribadah"], correct: 1 },
+    { q: "Rasul menjadi teladan dalam hal...", answers: ["Akhlak dan ibadah", "Kekayaan", "Kekuatan fisik", "Kedudukan"], correct: 0 },
+    { q: "Nabi Ibrahim AS mendapat gelar Khalilullah yang artinya...", answers: ["Utusan Allah", "Kekasih Allah", "Pemimpin umat", "Hamba pilihan"], correct: 1 },
+    { q: "Mukjizat Nabi Musa AS adalah...", answers: ["Membelah laut", "Menyembuhkan penyakit", "Membuat kapal besar", "Menurunkan hujan"], correct: 0 },
+    { q: "Nabi yang terkenal dengan kesabarannya adalah...", answers: ["Nabi Musa AS", "Nabi Yusuf AS", "Nabi Ayyub AS", "Nabi Nuh AS"], correct: 2 },
+    { q: "Nabi Yusuf AS menjadi teladan dalam hal...", answers: ["Keberanian", "Kesabaran dan pemaaf", "Kekuatan", "Kekayaan"], correct: 1 },
+    { q: "Rasulullah SAW memiliki sifat pemaaf kepada orang yang...", answers: ["Menolongnya", "Menyakitinya", "Memujinya", "Mengikutinya"], correct: 1 },
+    { q: "Rasulullah SAW dijuluki Al-Amin karena beliau...", answers: ["Kaya", "Cerdas", "Dapat dipercaya", "Berani"], correct: 2 },
+    { q: "Contoh meneladani rasul dalam kehidupan sehari-hari adalah...", answers: ["Berbohong", "Menepati janji", "Malas belajar", "Sombong"], correct: 1 },
+    { q: "Beriman kepada rasul membuat kita terdorong untuk...", answers: ["Berakhlak mulia", "Bermalas-malasan", "Berbuat curang", "Menyombongkan diri"], correct: 0 },
+    { q: "Rasul diutus oleh Allah untuk seluruh umat manusia disebut...", answers: ["Nabi lokal", "Rasul ulul azmi", "Rasul pilihan", "Rasul universal"], correct: 3 },
+    { q: "Salah satu rasul ulul azmi adalah...", answers: ["Nabi Yunus AS", "Nabi Ibrahim AS", "Nabi Yusuf AS", "Nabi Zakaria AS"], correct: 1 }
+  ];
+
+  // Variabel Global
+  let currentQuestions = [];
+  let currentQIndex = 0;
+  let score = 0;
+  let totalQuestions = 10;
+  let isAnswering = false;
+  const audioGameplay = document.getElementById('bgm-gameplay');
+  const imgBenar = "https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/JIKA%20JAWABAN%20BENAR.png";
+  const imgSalah = "https://raw.githubusercontent.com/cikgudirman-create/ASET-GASING-BARU/4509e097478956a9bc208ef8834eff810b1b7730/JIKA%20JAWABAN%20SALAH.png";
+
+  // --- LOGIKA UTAMA ---
+  document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('audio-activator-overlay');
+      overlay.addEventListener('touchstart', triggerGameStart, {once: true, passive: false});
+      overlay.addEventListener('click', triggerGameStart, {once: true});
+  });
+
+  function triggerGameStart(e) {
+      if (e.cancelable) e.preventDefault();
+      const overlay = document.getElementById('audio-activator-overlay');
+      if (!overlay || overlay.style.display === 'none') return;
+
+      overlay.style.display = 'none';
+      document.getElementById('screen-start').style.display = 'none';
+      
+      audioGameplay.currentTime = 0;
+      const playPromise = audioGameplay.play();
+      if (playPromise !== undefined) {
+          playPromise.catch(error => { console.warn("Autoplay diblokir, game lanjut tanpa musik.", error); });
+      }
+      startGameNow();
+  }
+
+  function startGameNow() {
+    // Acak soal dari 100 bank soal
+    currentQuestions = bankSoal.sort(() => 0.5 - Math.random()).slice(0, totalQuestions);
+    currentQIndex = 0; score = 0; updateScoreHud();
+    document.getElementById('screen-arena').style.display = 'flex';
+    // TAMBAHAN: Munculkan footer creator saat masuk arena
+    document.getElementById('creator-footer').style.display = 'block';
+    loadQuestion();
+  }
+
+  // FUNGSI RESET GAME (MAIN LAGI)
+  function resetGame(e) {
+    if (e && e.type === 'touchstart') { e.preventDefault(); }
+    document.getElementById('screen-end').style.display = 'none';
+    audioGameplay.play().catch(e => console.warn("Audio resume failed"));
+    startGameNow();
+  }
+
+  // FUNGSI KELUAR GAME
+  function exitGame(e) {
+    if (e && e.type === 'touchstart') { e.preventDefault(); }
+    
+    audioGameplay.pause();
+    audioGameplay.currentTime = 0;
+    
+    document.getElementById('screen-end').style.display = 'none';
+    document.getElementById('screen-arena').style.display = 'none';
+    
+    // TAMBAHAN: Sembunyikan footer saat kembali ke cover
+    document.getElementById('creator-footer').style.display = 'none';
+
+    document.getElementById('screen-start').style.display = 'flex';
+    const overlay = document.getElementById('audio-activator-overlay');
+    overlay.style.display = 'flex';
+    
+    overlay.addEventListener('touchstart', triggerGameStart, {once: true, passive: false});
+    overlay.addEventListener('click', triggerGameStart, {once: true});
+  }
+
+  // --- FUNGSI PROFIL (BARU) ---
+  function showProfile(e) {
+    if (e && e.type === 'touchstart') { e.preventDefault(); }
+    document.getElementById('screen-end').style.display = 'none';
+    document.getElementById('screen-profil').style.display = 'flex';
+  }
+
+  function closeProfile(e) {
+    if (e && e.type === 'touchstart') { e.preventDefault(); }
+    document.getElementById('screen-profil').style.display = 'none';
+    document.getElementById('screen-end').style.display = 'flex'; // Kembali ke layar akhir
+  }
+
+  function loadQuestion() {
+    isAnswering = false;
+    const qData = currentQuestions[currentQIndex];
+    document.getElementById('question-box').innerText = qData.q;
+    const btns = document.querySelectorAll('.answer-btn');
+    btns.forEach((btn, index) => {
+      btn.innerText = qData.answers[index];
+      btn.classList.remove('disabled');
+    });
+    resetArenaVisuals();
+  }
+
+  function checkAnswer(selectedIndex, e) {
+    if (e && e.type === 'touchstart') { e.preventDefault(); }
+    if (isAnswering) return;
+    isAnswering = true;
+    document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.add('disabled'));
+
+    const qData = currentQuestions[currentQIndex];
+    const isCorrect = (selectedIndex === qData.correct);
+    if (isCorrect) score += 10;
+    updateScoreHud();
+
+    const isLarge = window.innerWidth >= 1280;
+    const centerOffset = isLarge ? '125px' : '80px';
+    document.getElementById('gasing-kiri').style.left = `calc(50% - ${centerOffset})`;
+    document.getElementById('gasing-kanan').style.right = `calc(50% - ${centerOffset})`;
+
+    setTimeout(() => {
+       document.getElementById('collision-effect').style.transform = "translateX(-50%) scale(1.2)";
+    }, 700);
+
+    setTimeout(() => {
+      const feedbackOverlay = document.getElementById('feedback-overlay');
+      document.getElementById('feedback-img').src = isCorrect ? imgBenar : imgSalah;
+      feedbackOverlay.style.display = 'flex';
+      setTimeout(() => {
+        feedbackOverlay.style.display = 'none';
+        nextQuestion();
+      }, 2000);
+    }, 1200);
+  }
+
+  function resetArenaVisuals() {
+    const isLargeScreen = window.innerWidth >= 1280;
+    document.getElementById('gasing-kiri').style.left = isLargeScreen ? '12vw' : '8vw';
+    document.getElementById('gasing-kanan').style.right = isLargeScreen ? '12vw' : '8vw';
+    document.getElementById('collision-effect').style.transform = "translateX(-50%) scale(0)";
+  }
+
+  function nextQuestion() {
+    currentQIndex++;
+    if (currentQIndex < totalQuestions) {
+      loadQuestion();
+    } else {
+      finishGame();
+    }
+  }
+
+  function updateScoreHud() {
+    document.getElementById('score-val').innerText = score;
+  }
+
+  function finishGame() {
+    audioGameplay.pause();
+    document.getElementById('screen-arena').style.display = 'none';
+    document.getElementById('screen-end').style.display = 'flex';
+    document.getElementById('final-score-text').innerText = score;
+  }
+</script>
+</body>
+</html>
